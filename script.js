@@ -46,6 +46,10 @@ form.addEventListener('submit', (event) => {
     category.value = '';
 })
 
+/**
+ * 
+ * @param {object} newExpense Objeto com todas as informações da despesa.
+ */
 function expenseAdd(newExpense) {
     try {
         const expenseItem = document.createElement('li');
