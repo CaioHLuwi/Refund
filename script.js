@@ -1,8 +1,12 @@
+// Elementos do formulário
 const form = document.querySelector('form');
 const amount = document.querySelector('#amount');
 const expense = document.querySelector('#expense');
 const category = document.querySelector('#category');
-const expenseArea = document.querySelector('#expense-area');
+
+// Elementos da Lista
+const expenseList = document.querySelector('#expense-area');
+const expensesTotal = document.querySelector('aside header h2');
 
 amount.addEventListener('input', () => {
     let value = amount.value.replace(/\D/g, "");
@@ -15,7 +19,7 @@ amount.addEventListener('input', () => {
 
 /**
  * 
- * @param {Number} value Valor inserido no campo de valor da despesa.
+ * @param {Number} value Valor o qual deseja formatar em BRL.
  * @returns Valor formatado na moeda BRL.
  */
 function formatCurrencyBRL(value) {
@@ -92,14 +96,53 @@ function expenseAdd(newExpense) {
 
         expenseItem.appendChild(deleteIcon);
 
-        expenseArea.appendChild(expenseItem);
+        expenseList.appendChild(expenseItem);
 
         deleteIcon.addEventListener('click', (event) => {
             event.target.parentNode.remove();
         })
+
+        updateTotals();
     } catch(error) {
         alert('Não foi possível atualizar a lista de despesas');
         console.log(error);
+    }
+}
+
+function updateTotals() {
+    try {
+        const items = expenseList.children;
+        document.querySelector('p span').textContent = `${items.length} ${items.length === 1 ? `despesa` : `despesas` } `;
+
+        let total = 0;
+
+        for(let item = 0; item < items.length; item++) {
+            const itemAmount = items[item].querySelector('.expense-amount');
+
+            let value = itemAmount.textContent.replace(/[^\d,]/g, "");
+
+            value = parseFloat(value);
+
+            if(isNaN(value)) {
+                return alert("Não foi possível calcular o total. O valor não parece ser um número");
+            }
+
+            total += Number(value);
+
+            console.log(total);
+        }
+
+        const symbolBRL = document.createElement('small');
+        symbolBRL.textContent = 'R$';
+
+        total = formatCurrencyBRL(total).toUpperCase().replace('R$', '');
+
+        expensesTotal.innerHTML = '';
+
+        expensesTotal.append(symbolBRL, total);
+    } catch (error) {
+        console.log(error);
+        alert('Não possível atualizar os totais.');
     }
 }
 
